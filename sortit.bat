@@ -1,0 +1,1 @@
+python3 .\file_sorter.py --Pathname .\Camera --Prefix "IMG_" --Ciphers 4
