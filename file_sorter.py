@@ -28,12 +28,12 @@ def restructure(Pathname, Prefix, Ciphers):
             continue
          
         if not file.startswith(Prefix):
+            print()
             print(f"File %s does not match Pattern (\"%s\")" % (file, Prefix))
-            break
+            continue
+            
         new_foldername = file[len(Prefix):len(Prefix)+Ciphers]
         copy_file(file, Pathname, new_foldername)
-           
-
   
 if __name__ == '__main__':
     print()
