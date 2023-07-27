@@ -1,24 +1,28 @@
 # import modules used here -- sys is a very standard one
 import sys, argparse, logging, os
 import shutil
+from tqdm import tqdm
 
 def copy_file(filename, Pathname, new_foldername):    
     joinPathname = os.path.join(Pathname, new_foldername)    
     if not os.path.exists(joinPathname):
+        print()
         print(f"Creating dir %s" % joinPathname)
         os.makedirs(joinPathname, exist_ok=True)
         
     filesrc = os.path.join(Pathname, filename)
     filedst = os.path.join(joinPathname, filename)
 
-    print(f"From %s to %s" % (filesrc, filedst))
+    #print(f"From %s to %s" % (filesrc, filedst))
     shutil.copyfile(filesrc, filedst)
         
 
 def restructure(Pathname, Prefix, Ciphers):
     
     files = os.listdir(Pathname)
-    for file in files:
+    
+    for i in tqdm(range(len(files))):
+        file = files[i]
         
         if not os.path.isfile(os.path.join(Pathname, file)): 
             continue
