@@ -14,26 +14,39 @@ def copy_file(filename, Pathname, new_foldername):
     filedst = os.path.join(joinPathname, filename)
 
     #print(f"From %s to %s" % (filesrc, filedst))
-    shutil.copyfile(filesrc, filedst)
+    if not os.path.exists(filedst):
+        shutil.copyfile(filesrc, filedst)
         
 
-def restructure(Pathname, Prefix, Ciphers):
+
+def restructure(Pathname, Ciphers):
     
     files = os.listdir(Pathname)
+    logname = "filesorter.log"
+    
+    log = open(os.path.join(Pathname, logname), "w")    
+    Prefixes = set()
     
     for i in tqdm(range(len(files))):
-        file = files[i]
-        
-        if not os.path.isfile(os.path.join(Pathname, file)): 
+        file = files[i]        
+        if not os.path.isfile(os.path.join(Pathname, file)) or (file == logname): 
             continue
-         
-        if not file.startswith(Prefix):
-            print()
-            print(f"File %s does not match Pattern (\"%s\")" % (file, Prefix))
+        
+        iUnderscore = file.find('_')       
+
+        if iUnderscore < 0:
+            log.write(f"! %s\n" % file)
             continue
             
+        Prefix = file[:iUnderscore+1]
+        if not Prefix in Prefixes:
+            log.write(f"%s\n" % Prefix)
+            log.flush()
+            Prefixes.add(Prefix)
+        
         new_foldername = file[len(Prefix):len(Prefix)+Ciphers]
         copy_file(file, Pathname, new_foldername)
+        
   
 if __name__ == '__main__':
     print()
@@ -42,15 +55,11 @@ if __name__ == '__main__':
                                     epilog = "As an alternative to the commandline, params can be placed in a file, one per line, and specified on the commandline like '%(prog)s @params.conf'.",
                                     fromfile_prefix_chars = '@' )
     parser.add_argument(
-                      "--Pathname",
+                      "Pathname",
                       help = "Path of the folder the files are in",
                       metavar = "Pathname",
                       default='.')
-    parser.add_argument(
-                      "--Prefix",
-                      help = "Prefix of the Name-Pattern",
-                      metavar = "Prefix",                      
-                      required=True)
+
     parser.add_argument(
                       "--Ciphers",
                       help = "Ciphers of the series of letters used for the later folders",
@@ -58,7 +67,6 @@ if __name__ == '__main__':
                       default=4,
                       type=int)
     args = parser.parse_args()
-    print(args)
     
-    restructure(args.Pathname, args.Prefix, args.Ciphers)
+    restructure(args.Pathname, args.Ciphers)
     
